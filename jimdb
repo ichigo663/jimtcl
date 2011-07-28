@@ -1,0 +1,25 @@
+#!/bin/sh
+# vim:se syntax=tcl:
+# \
+exec $(dirname "$0")/jimsh "$0" "$@"
+
+set auto_path [list [file dirname $argv0]/jimlib {*}$auto_path]
+
+if {[string match -t* [lindex $argv 0]]} {
+	set argv [lassign $argv trace]
+}
+
+set argv [lassign $argv argv0]
+if {$argv0 eq ""} {
+	stderr puts "Usage: jimdb script ?args ...?"
+	exit 1
+}
+
+package require debugger
+
+puts "Jim Tcl debugger v1.0  -  Use ? for help\n"
+
+# Break at the very next command after source
+set debugger::state(trace) [info exists trace]
+set debugger::state(bpany) 2
+source $argv0
